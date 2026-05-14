@@ -4,7 +4,6 @@
  */
 require("dotenv").config();
 const { verifyKey } = require("discord-interactions");
-const { handleDiscordApplicationCommand } = require("./discordInteractions");
 
 const InteractionType = { PING: 1, APPLICATION_COMMAND: 2 };
 const InteractionResponseType = { PONG: 1, CHANNEL_MESSAGE_WITH_SOURCE: 4 };
@@ -91,6 +90,7 @@ async function handleDiscordLambdaEvent(event) {
   }
 
   if (body.type === InteractionType.APPLICATION_COMMAND) {
+    const { handleDiscordApplicationCommand } = require("./discordInteractions");
     const reply = await handleDiscordApplicationCommand(body);
     return jsonResponse(200, reply);
   }
