@@ -1,0 +1,134 @@
+[build]
+  base = "."
+  command = "npm install && npm run build:frontend"
+  publish = "frontend/dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["better-sqlite3"]
+
+[functions."api"]
+  included_files = ["backend/src/**"]
+
+# Discord + canais InphoPay (valores não secretos; BOT_TOKEN, JWT_SECRET e Supabase ficam no painel Netlify)
+[context.production.environment]
+  DISCORD_PUBLIC_KEY = "cf7d319d9d7e4c05c903f8d0a88e59b88fb3539dc77339b00732f631582df741"
+  DISCORD_APPLICATION_ID = "1504479753997123594"
+  DISCORD_CHANNEL_REGISTRATIONS = "1504483725755416576"
+  DISCORD_CHANNEL_WITHDRAWALS = "1504483782466732103"
+
+[context.deploy-preview.environment]
+  DISCORD_PUBLIC_KEY = "cf7d319d9d7e4c05c903f8d0a88e59b88fb3539dc77339b00732f631582df741"
+  DISCORD_APPLICATION_ID = "1504479753997123594"
+  DISCORD_CHANNEL_REGISTRATIONS = "1504483725755416576"
+  DISCORD_CHANNEL_WITHDRAWALS = "1504483782466732103"
+
+# All app traffic goes through the api function
+[[redirects]]
+  from = "/auth/*"
+  to = "/.netlify/functions/api/auth/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/me"
+  to = "/.netlify/functions/api/me"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/wallet"
+  to = "/.netlify/functions/api/wallet"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/wallet/*"
+  to = "/.netlify/functions/api/wallet/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/transactions"
+  to = "/.netlify/functions/api/transactions"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/checkout-links"
+  to = "/.netlify/functions/api/checkout-links"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/checkout-links/*"
+  to = "/.netlify/functions/api/checkout-links/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api-keys"
+  to = "/.netlify/functions/api/api-keys"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api-keys/*"
+  to = "/.netlify/functions/api/api-keys/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/pix/*"
+  to = "/.netlify/functions/api/pix/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/v1/*"
+  to = "/.netlify/functions/api/api/v1/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/public/*"
+  to = "/.netlify/functions/api/public/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/checkout/*"
+  to = "/.netlify/functions/api/checkout/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/api/health"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/withdrawals"
+  to = "/.netlify/functions/api/withdrawals"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/withdrawals/*"
+  to = "/.netlify/functions/api/withdrawals/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/discord/interactions"
+  to = "/.netlify/functions/api/discord/interactions"
+  status = 200
+  force = true
+
+# SPA fallback - must be the last redirect
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

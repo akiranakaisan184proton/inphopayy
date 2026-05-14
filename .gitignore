@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+backend/data.sqlite
+backend/data.sqlite-*
+
+# Local Netlify folder
+.netlify

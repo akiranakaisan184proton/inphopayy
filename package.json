@@ -1,0 +1,32 @@
+{
+  "name": "inphopay",
+  "version": "1.0.0",
+  "description": "Private payment gateway - InphoPay",
+  "main": "index.js",
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "start:backend": "npm --prefix backend run start",
+    "build:frontend": "npm --prefix frontend install && npm --prefix frontend run build"
+  },
+  "keywords": [
+    "gateway",
+    "pix",
+    "inphopay"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.4",
+    "axios": "^1.15.2",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "discord-interactions": "^4.4.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "serverless-http": "^4.0.0",
+    "zod": "^4.3.6"
+  }
+}
