@@ -149,4 +149,4 @@ async function discordInteractionHandler(req, res) {
   return jsonResponse(res, ephemeralMessage("Tipo de interacao nao suportado."));
 }
 
-module.exports = { discordInteractionHandler };
+module.exports = { discordInteractionHandler, handleDiscordApplicationCommand: handleCommand };

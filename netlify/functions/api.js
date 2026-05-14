@@ -1,4 +1,7 @@
+require("dotenv").config();
+
 const serverless = require("serverless-http");
+const { handleDiscordLambdaEvent, shouldHandleDiscordInteractions } = require("../../backend/src/discordLambdaInteraction");
 const { app } = require("../../backend/src/server");
 
 const handler = serverless(app, {
@@ -11,10 +14,13 @@ const handler = serverless(app, {
 });
 
 module.exports.handler = async (event, context) => {
-  if (event && typeof event.path === "string") {
-    event.path = event.path
-      .replace(/^\/\.netlify\/functions\/api/, "")
-      .replace(/^\/api/, "") || "/";
+  if (event && shouldHandleDiscordInteractions(event)) {
+    return handleDiscordLambdaEvent(event);
   }
+
+  if (event && typeof event.path === "string") {
+    event.path = event.path.replace(/^\/\.netlify\/functions\/api/, "").replace(/^\/api/, "") || "/";
+  }
+
   return handler(event, context);
 };
