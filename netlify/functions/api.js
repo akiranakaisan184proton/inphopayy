@@ -1,8 +1,8 @@
 require("dotenv").config();
 
 const serverless = require("serverless-http");
-const { handleDiscordLambdaEvent, shouldHandleDiscordInteractions } = require("../../backend/src/discordLambdaInteraction");
 const { app } = require("../../backend/src/server");
+const { handleDiscordLambdaEvent, shouldHandleDiscordInteractions } = require("../../backend/src/discordLambdaInteraction");
 
 const handler = serverless(app, {
   request(request) {

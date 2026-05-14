@@ -1,0 +1,48 @@
+INPHOPAY — COMO PUBLICAR NA NETLIFY (E FAZER O DISCORD FUNCIONAR)
+================================================================
+
+1) POR QUE SUBIR A “PASTA INTEIRA” DO PROJETO NAO FUNCIONA
+   - O site precisa do FRONTEND JA COMPILADO (pasta frontend/dist).
+   - A API e a function serverless (netlify/functions) precisam ser empacotadas pela Netlify (esbuild).
+   - Arrastar o repositorio cru no painel NAO roda "npm install && npm run build:frontend" nem empacota a function direito.
+
+2) FORMA CERTA (RECOMENDADA): GITHUB + NETLIFY
+   a) Crie um repositorio no GitHub e envie este codigo (git remote add origin ... && git push).
+   b) No Netlify: Site "inphopay" > Project configuration > Build & deploy > Continuous deployment
+      > Link repository > escolha o repo > branch main ou master.
+   c) Build settings (ja batem com netlify.toml na raiz):
+        Base directory: (vazio)
+        Build command:   npm install && npm run build:frontend
+        Publish directory: frontend/dist
+   d) No GitHub do repo: Settings > Secrets and variables > Actions > New repository secret
+        NETLIFY_SITE_ID  = 29d40e90-566c-4fcc-b824-fda7a562ab54
+        NETLIFY_AUTH_TOKEN = um Personal Access Token da Netlify (ver item 3)
+   e) Cada push em main/master dispara o workflow .github/workflows/netlify-deploy.yml
+
+3) PERSONAL ACCESS TOKEN (PAT) — USE SE A CLI DER "Forbidden" EM --prod
+   - O login normal da CLI (OAuth) as vezes NAO tem permissao para criar deploy de PRODUCAO na API.
+   - Crie um PAT: https://app.netlify.com/user/applications#personal-access-tokens
+   - No PowerShell, na pasta do projeto:
+        $env:NETLIFY_AUTH_TOKEN="cole_aqui_o_token_npat_..."
+        npx netlify deploy --prod --build --skip-functions-cache
+
+4) VARIAVEIS DE AMBIENTE (OBRIGATORIO PARA API + DISCORD + SUPABASE)
+   Netlify > Site configuration > Environment variables > Production
+   Confirme que existem (e com escopo Functions / Runtime):
+   - JWT_SECRET
+   - SUPABASE_URL e SUPABASE_SERVICE_KEY (producao usa Supabase, nao SQLite)
+   - DISCORD_BOT_TOKEN, DISCORD_PUBLIC_KEY, DISCORD_APPLICATION_ID
+   - DISCORD_CHANNEL_REGISTRATIONS, DISCORD_CHANNEL_WITHDRAWALS
+   - (demais: TriboPay, PUBLIC_BASE_URL, etc.)
+
+5) DISCORD — INTERACTIONS ENDPOINT URL
+   Apos um deploy de PRODUCAO com o codigo atual:
+   https://inphopay.netlify.app/discord/interactions
+   Developer Portal > Application > Interactions Endpoint URL > Save
+
+6) AJUSTES JA FEITOS NO PROJETO NETLIFY (SITE inphopay)
+   - quick_setup_in_progress foi desativado (bloqueava fluxo).
+   - cdp_enabled_contexts inclui "production" alem de deploy-preview.
+
+Se ainda aparecer Forbidden com PAT, verifique na Netlify se a sua conta tem permissao de "Publisher" no time
+ou abra um ticket Netlify — pode ser politica do plano/time.

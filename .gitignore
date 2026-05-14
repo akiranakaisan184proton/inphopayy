@@ -6,3 +6,8 @@ backend/data.sqlite-*
 
 # Local Netlify folder
 .netlify
+.tmp-site.json
+.tmp-api-unzip/
+.tmp-api-manual/
+netlify-manual-deploy/
+inphopay-manual.zip
