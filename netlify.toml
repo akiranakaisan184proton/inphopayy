@@ -11,18 +11,8 @@
 [functions."api"]
   included_files = ["backend/src/**"]
 
-# Discord + canais InphoPay (valores não secretos; BOT_TOKEN, JWT_SECRET e Supabase ficam no painel Netlify)
-[context.production.environment]
-  DISCORD_PUBLIC_KEY = "cf7d319d9d7e4c05c903f8d0a88e59b88fb3539dc77339b00732f631582df741"
-  DISCORD_APPLICATION_ID = "1504479753997123594"
-  DISCORD_CHANNEL_REGISTRATIONS = "1504483725755416576"
-  DISCORD_CHANNEL_WITHDRAWALS = "1504483782466732103"
-
-[context.deploy-preview.environment]
-  DISCORD_PUBLIC_KEY = "cf7d319d9d7e4c05c903f8d0a88e59b88fb3539dc77339b00732f631582df741"
-  DISCORD_APPLICATION_ID = "1504479753997123594"
-  DISCORD_CHANNEL_REGISTRATIONS = "1504483725755416576"
-  DISCORD_CHANNEL_WITHDRAWALS = "1504483782466732103"
+# Variáveis Discord e canais: configure no painel Netlify (Site settings → Environment variables)
+# para os âmbitos "Functions" e "Runtime", ou use: netlify env:set KEY value --context production --force
 
 # All app traffic goes through the api function
 [[redirects]]
