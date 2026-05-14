@@ -18,6 +18,7 @@ INPHOPAY — COMO PUBLICAR NA NETLIFY (E FAZER O DISCORD FUNCIONAR)
         NETLIFY_SITE_ID  = 29d40e90-566c-4fcc-b824-fda7a562ab54
         NETLIFY_AUTH_TOKEN = um Personal Access Token da Netlify (ver item 3)
    e) Cada push em main/master dispara o workflow .github/workflows/netlify-deploy.yml
+      (o workflow usa "npx netlify-cli" no runner; nao precisa instalar a CLI na sua maquina para o CI.)
 
 3) PERSONAL ACCESS TOKEN (PAT) — USE SE A CLI DER "Forbidden" EM --prod
    - O login normal da CLI (OAuth) as vezes NAO tem permissao para criar deploy de PRODUCAO na API.
