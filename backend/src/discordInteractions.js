@@ -119,6 +119,9 @@ async function discordInteractionHandler(req, res) {
   if (!publicKey) {
     return res.status(503).send("DISCORD_PUBLIC_KEY nao configurado.");
   }
+  if (!signature || !timestamp) {
+    return res.status(401).send("Missing signature headers");
+  }
 
   const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(String(req.body || ""), "utf8");
 
