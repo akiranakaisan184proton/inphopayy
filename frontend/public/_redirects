@@ -1,2 +1,2 @@
 # Rewrites para a function `api` (complemento ao netlify.toml — vai para dist/ no build)
-/discord/interactions /.netlify/functions/api/discord/interactions 200
+/discord/interactions /.netlify/functions/discord-interactions 200

@@ -36,10 +36,16 @@ INPHOPAY — COMO PUBLICAR NA NETLIFY (E FAZER O DISCORD FUNCIONAR)
    - DISCORD_CHANNEL_REGISTRATIONS, DISCORD_CHANNEL_WITHDRAWALS
    - (demais: TriboPay, PUBLIC_BASE_URL, etc.)
 
-5) DISCORD — INTERACTIONS ENDPOINT URL
-   Apos um deploy de PRODUCAO com o codigo atual:
-   https://inphopay.netlify.app/discord/interactions
-   Developer Portal > Application > Interactions Endpoint URL > Save
+5) DISCORD — INTERACTIONS ENDPOINT URL (use a URL direta da function; e o jeito mais simples)
+   Apos deploy de PRODUCAO com este codigo, no Developer Portal > Interactions Endpoint URL, use UMA destas:
+
+   RECOMENDADO (menos camadas, melhor para verificar assinatura):
+   https://SEU-SITE.netlify.app/.netlify/functions/discord-interactions
+
+   Alternativa (rewrite amigavel, tambem valida):
+   https://SEU-SITE.netlify.app/discord/interactions
+
+   Substitua SEU-SITE pelo hostname real (ex.: inphopay). Salve no Discord.
 
 6) AJUSTES JA FEITOS NO PROJETO NETLIFY (SITE inphopay)
    - quick_setup_in_progress foi desativado (bloqueava fluxo).

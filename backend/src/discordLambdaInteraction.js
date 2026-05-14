@@ -98,28 +98,4 @@ async function handleDiscordLambdaEvent(event) {
   return jsonResponse(200, ephemeralMessage("Tipo de interacao nao suportado."));
 }
 
-function normalizeNetlifyPath(event) {
-  let p =
-    event.path ||
-    event.rawPath ||
-    event.requestContext?.http?.path ||
-    (event.pathParameters?.proxy ? `/${event.pathParameters.proxy}` : "") ||
-    "/";
-  p = String(p).split("?")[0];
-  p = p.replace(/^\/\.netlify\/functions\/api/, "");
-  p = p.replace(/^\/api/, "");
-  if (!p.startsWith("/")) p = `/${p}`;
-  return p === "" ? "/" : p;
-}
-
-function netlifyHttpMethod(event) {
-  return String(
-    event.httpMethod || event.requestContext?.http?.method || event.requestContext?.requestMethod || "GET",
-  ).toUpperCase();
-}
-
-function shouldHandleDiscordInteractions(event) {
-  return normalizeNetlifyPath(event) === "/discord/interactions" && netlifyHttpMethod(event) === "POST";
-}
-
-module.exports = { handleDiscordLambdaEvent, normalizeNetlifyPath, netlifyHttpMethod, shouldHandleDiscordInteractions };
+module.exports = { handleDiscordLambdaEvent };

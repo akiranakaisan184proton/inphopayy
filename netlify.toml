@@ -11,6 +11,9 @@
 [functions."api"]
   included_files = ["backend/src/**"]
 
+[functions."discord-interactions"]
+  included_files = ["backend/src/**"]
+
 # Variáveis Discord e canais: configure no painel Netlify (Site settings → Environment variables)
 # para os âmbitos "Functions" e "Runtime", ou use: netlify env:set KEY value --context production --force
 
@@ -113,7 +116,7 @@
 
 [[redirects]]
   from = "/discord/interactions"
-  to = "/.netlify/functions/api/discord/interactions"
+  to = "/.netlify/functions/discord-interactions"
   status = 200
   force = true
 
