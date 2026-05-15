@@ -51,7 +51,9 @@ function jsonResponse(statusCode, payload) {
 }
 
 async function handleDiscordLambdaEvent(event) {
-  const publicKey = process.env.DISCORD_PUBLIC_KEY;
+  const publicKey = String(process.env.DISCORD_PUBLIC_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
   if (!publicKey) {
     return { statusCode: 503, headers: { "Content-Type": "text/plain; charset=utf-8" }, body: "DISCORD_PUBLIC_KEY nao configurado." };
   }
@@ -68,9 +70,10 @@ async function handleDiscordLambdaEvent(event) {
     return { statusCode: 401, headers: { "Content-Type": "text/plain; charset=utf-8" }, body: "Invalid body encoding" };
   }
 
-  let ok;
+  let ok = false;
   try {
-    ok = verifyKey(rawBody, signature, timestamp, publicKey);
+    // verifyKey retorna Promise; sem await a assinatura nunca era validada de fato.
+    ok = await verifyKey(rawBody, signature, timestamp, publicKey);
   } catch {
     ok = false;
   }

@@ -10,5 +10,5 @@ module.exports.handler = async (event) => {
   if (method !== "POST") {
     return { statusCode: 405, headers: { "Content-Type": "text/plain; charset=utf-8" }, body: "Method Not Allowed" };
   }
-  return handleDiscordLambdaEvent(event);
+  return await handleDiscordLambdaEvent(event);
 };
