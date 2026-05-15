@@ -1,7 +1,7 @@
 # Deploy em PRODUCAO na Netlify a cada push na branch main/master.
 # Requer secrets no GitHub do repositorio:
 #   NETLIFY_AUTH_TOKEN  -> Personal Access Token (nao use o token da CLI OAuth se der Forbidden)
-#   NETLIFY_SITE_ID     -> 29d40e90-566c-4fcc-b824-fda7a562ab54
+#   NETLIFY_SITE_ID     -> Site ID em Netlify > Site configuration > General
 #
 # Criar PAT: https://app.netlify.com/user/applications#personal-access-tokens
 # Permissoes: escopo que permita deploy (ex.: "Full access" para testar).
