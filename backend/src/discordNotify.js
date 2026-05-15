@@ -125,7 +125,7 @@ function hintForRegistrationDiscord(code) {
     case "missing_channel_id":
       return "Aviso no Discord nao enviado: configure DISCORD_CHANNEL_REGISTRATIONS com o ID do canal de texto (Modo desenvolvedor > copiar ID).";
     case "forbidden":
-      return "Aviso no Discord nao enviado: o bot nao pode postar nesse canal (adicione-o ao servidor, cargo com Ver canal + Enviar mensagens).";
+      return "Aviso no Discord nao enviado: sem permissao no canal de cadastros. No Discord: Config. do canal > Permissoes > @seu-bot ou cargo do bot: Ver canal, Enviar mensagens, Incorporar links (embeds).";
     case "unknown_channel":
       return "Aviso no Discord nao enviado: ID do canal invalido ou o bot nao esta nesse servidor.";
     default:
@@ -143,7 +143,7 @@ function hintForWithdrawalDiscord(code) {
     case "missing_channel_id":
       return "Aviso de saque no Discord nao enviado: DISCORD_CHANNEL_WITHDRAWALS (ID do canal).";
     case "forbidden":
-      return "Aviso de saque no Discord nao enviado: sem permissao no canal de saques.";
+      return "Aviso de saque no Discord nao enviado: permissao no canal (Ver canal, Enviar mensagens, Incorporar links).";
     case "unknown_channel":
       return "Aviso de saque no Discord nao enviado: canal invalido ou bot fora do servidor.";
     default:
