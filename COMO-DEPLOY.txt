@@ -35,6 +35,8 @@ INPHOPAY — COMO PUBLICAR NA NETLIFY (E FAZER O DISCORD FUNCIONAR)
    - DISCORD_BOT_TOKEN, DISCORD_PUBLIC_KEY, DISCORD_APPLICATION_ID
    - DISCORD_CHANNEL_REGISTRATIONS, DISCORD_CHANNEL_WITHDRAWALS
    - (demais: TriboPay, PUBLIC_BASE_URL, etc.)
+   - O bot precisa estar NO MESMO SERVIDOR dos canais; IDs de canal sao copiados com Modo desenvolvedor no Discord.
+     Permissoes do bot no canal: Ver canal + Enviar mensagens (e Incorporar links para embeds).
 
 5) DISCORD — INTERACTIONS ENDPOINT URL (use a URL direta da function; e o jeito mais simples)
    Apos deploy de PRODUCAO com este codigo, no Developer Portal > Interactions Endpoint URL, use UMA destas:

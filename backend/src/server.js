@@ -155,16 +155,23 @@ app.post("/auth/register", async (req, res) => {
     const user = await repo.createUser({ username, name, email, password_hash: passwordHash });
     await repo.createWallet(user.id);
     const full = await repo.findUserById(user.id);
+    let discordReg = { ok: true };
     try {
-      await discordNotify.notifyNewRegistration(full || user);
+      discordReg = await discordNotify.notifyNewRegistration(full || user);
     } catch (e) {
       console.warn("Discord notify registration:", e?.message || e);
+      discordReg = { ok: false, code: "exception" };
     }
-    return res.status(201).json({
+    const payload = {
       pending: true,
       message: "Cadastro recebido. Sua conta esta em analise.",
       user: { id: user.id, username, name },
-    });
+      discord_registration_ok: Boolean(discordReg.ok),
+    };
+    if (!discordReg.ok) {
+      payload.discord_registration_hint = discordNotify.hintForRegistrationDiscord(discordReg.code);
+    }
+    return res.status(201).json(payload);
   } catch (error) {
     if (String(error.message || "").toLowerCase().includes("unique")) {
       return res.status(409).json({ error: "Usuario ja cadastrado." });
@@ -471,12 +478,14 @@ app.post("/withdrawals", requireAuth, requireApprovedUser, async (req, res) => {
       pix_key: parsed.data.pixKey.trim(),
     });
     const user = await repo.findUserById(req.user.sub);
+    let discordWd = { ok: true };
     try {
-      await discordNotify.notifyWithdrawalRequest(row, user);
+      discordWd = await discordNotify.notifyWithdrawalRequest(row, user);
     } catch (e) {
       console.warn("Discord notify withdrawal:", e?.message || e);
+      discordWd = { ok: false, code: "exception" };
     }
-    res.status(201).json({
+    const body = {
       withdrawal: {
         id: row.id,
         amount: toMoney(row.amount_cents),
@@ -484,7 +493,12 @@ app.post("/withdrawals", requireAuth, requireApprovedUser, async (req, res) => {
         pix_key: row.pix_key,
         created_at: row.created_at,
       },
-    });
+      discord_withdrawal_ok: Boolean(discordWd.ok),
+    };
+    if (!discordWd.ok) {
+      body.discord_withdrawal_hint = discordNotify.hintForWithdrawalDiscord(discordWd.code);
+    }
+    res.status(201).json(body);
   } catch (error) {
     if (String(error.message) === "INSUFFICIENT_FUNDS") {
       return res.status(400).json({ error: "Saldo insuficiente para este saque." });

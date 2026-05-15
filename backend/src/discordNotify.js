@@ -4,23 +4,39 @@
  */
 
 function isConfigured() {
-  return Boolean(process.env.DISCORD_BOT_TOKEN);
+  return Boolean(String(process.env.DISCORD_BOT_TOKEN || "").trim());
 }
 
+/**
+ * @returns {Promise<{ ok: boolean, skipped?: boolean, code?: string }>}
+ */
 async function postToChannel(channelId, payload) {
-  if (!process.env.DISCORD_BOT_TOKEN || !channelId) return;
-  const res = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+  const token = String(process.env.DISCORD_BOT_TOKEN || "").trim();
+  const id = String(channelId || "").trim().replace(/^["']|["']$/g, "");
+  if (!token) {
+    console.warn("Discord: DISCORD_BOT_TOKEN ausente ou vazio.");
+    return { ok: false, skipped: true, code: "missing_bot_token" };
+  }
+  if (!id) {
+    console.warn("Discord: ID do canal ausente.");
+    return { ok: false, skipped: true, code: "missing_channel_id" };
+  }
+  const res = await fetch(`https://discord.com/api/v10/channels/${id}/messages`, {
     method: "POST",
     headers: {
-      Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+      Authorization: `Bot ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    console.warn("Discord post falhou:", res.status, text);
+    console.warn("Discord post falhou:", res.status, text.slice(0, 500));
+    if (res.status === 403) return { ok: false, code: "forbidden" };
+    if (res.status === 404) return { ok: false, code: "unknown_channel" };
+    return { ok: false, code: `http_${res.status}` };
   }
+  return { ok: true };
 }
 
 function registrationEmbed(user) {
@@ -81,16 +97,67 @@ function withdrawalEmbed(row, user) {
   };
 }
 
+/** @returns {Promise<{ ok: boolean, skipped?: boolean, code?: string }>} */
 async function notifyNewRegistration(user) {
-  const ch = process.env.DISCORD_CHANNEL_REGISTRATIONS;
-  if (!isConfigured() || !ch) return;
-  await postToChannel(ch, registrationEmbed(user));
+  const ch = String(process.env.DISCORD_CHANNEL_REGISTRATIONS || "").trim();
+  if (!isConfigured() || !ch) {
+    if (!ch) console.warn("Discord: DISCORD_CHANNEL_REGISTRATIONS nao definido.");
+    return { ok: false, skipped: true, code: !isConfigured() ? "missing_bot_token" : "missing_channel_id" };
+  }
+  return postToChannel(ch, registrationEmbed(user));
 }
 
+/** @returns {Promise<{ ok: boolean, skipped?: boolean, code?: string }>} */
 async function notifyWithdrawalRequest(row, user) {
-  const ch = process.env.DISCORD_CHANNEL_WITHDRAWALS;
-  if (!isConfigured() || !ch) return;
-  await postToChannel(ch, withdrawalEmbed(row, user));
+  const ch = String(process.env.DISCORD_CHANNEL_WITHDRAWALS || "").trim();
+  if (!isConfigured() || !ch) {
+    if (!ch) console.warn("Discord: DISCORD_CHANNEL_WITHDRAWALS nao definido.");
+    return { ok: false, skipped: true, code: !isConfigured() ? "missing_bot_token" : "missing_channel_id" };
+  }
+  return postToChannel(ch, withdrawalEmbed(row, user));
 }
 
-module.exports = { isConfigured, notifyNewRegistration, notifyWithdrawalRequest };
+/** Texto curto para o usuario (sem segredos). */
+function hintForRegistrationDiscord(code) {
+  switch (code) {
+    case "missing_bot_token":
+      return "Aviso no Discord nao enviado: configure DISCORD_BOT_TOKEN na Netlify (escopo Functions).";
+    case "missing_channel_id":
+      return "Aviso no Discord nao enviado: configure DISCORD_CHANNEL_REGISTRATIONS com o ID do canal de texto (Modo desenvolvedor > copiar ID).";
+    case "forbidden":
+      return "Aviso no Discord nao enviado: o bot nao pode postar nesse canal (adicione-o ao servidor, cargo com Ver canal + Enviar mensagens).";
+    case "unknown_channel":
+      return "Aviso no Discord nao enviado: ID do canal invalido ou o bot nao esta nesse servidor.";
+    default:
+      if (String(code || "").startsWith("http_")) {
+        return "Aviso no Discord nao enviado: erro da API do Discord (veja logs da function na Netlify).";
+      }
+      return "Aviso no Discord nao enviado (veja logs na Netlify).";
+  }
+}
+
+function hintForWithdrawalDiscord(code) {
+  switch (code) {
+    case "missing_bot_token":
+      return "Aviso de saque no Discord nao enviado: DISCORD_BOT_TOKEN na Netlify.";
+    case "missing_channel_id":
+      return "Aviso de saque no Discord nao enviado: DISCORD_CHANNEL_WITHDRAWALS (ID do canal).";
+    case "forbidden":
+      return "Aviso de saque no Discord nao enviado: sem permissao no canal de saques.";
+    case "unknown_channel":
+      return "Aviso de saque no Discord nao enviado: canal invalido ou bot fora do servidor.";
+    default:
+      if (String(code || "").startsWith("http_")) {
+        return "Aviso de saque no Discord nao enviado (API Discord).";
+      }
+      return "Aviso de saque no Discord nao enviado.";
+  }
+}
+
+module.exports = {
+  isConfigured,
+  notifyNewRegistration,
+  notifyWithdrawalRequest,
+  hintForRegistrationDiscord,
+  hintForWithdrawalDiscord,
+};

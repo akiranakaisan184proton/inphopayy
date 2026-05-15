@@ -253,7 +253,9 @@ function App() {
       });
       if (response.data?.pending) {
         setPendingApproval({ username, password });
-        setMessage(response.data?.message || "Cadastro em analise. Aguarde aprovacao.");
+        const base = response.data?.message || "Cadastro em analise. Aguarde aprovacao.";
+        const hint = (response.data as { discord_registration_hint?: string }).discord_registration_hint;
+        setMessage(hint ? `${base} ${hint}` : base);
         return;
       }
       const currentSession = response.data as Session;
@@ -277,8 +279,10 @@ function App() {
       return;
     }
     try {
-      await api.post("/withdrawals", { amountCents, pixKey }, { headers: authHeader });
-      setMessage("Saque solicitado. Status: em processamento ate confirmacao.");
+      const response = await api.post("/withdrawals", { amountCents, pixKey }, { headers: authHeader });
+      const base = "Saque solicitado. Status: em processamento ate confirmacao.";
+      const hint = (response.data as { discord_withdrawal_hint?: string }).discord_withdrawal_hint;
+      setMessage(hint ? `${base} ${hint}` : base);
       setWithdrawPixKey("");
       await refreshData(session);
     } catch (error: unknown) {
