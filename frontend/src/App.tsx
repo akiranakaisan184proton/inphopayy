@@ -261,8 +261,10 @@ function App() {
       setMessage("Conta criada.");
       await refreshData(currentSession);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
-      setMessage(err?.response?.data?.error || "Falha ao criar conta.");
+      const err = error as { response?: { data?: { error?: string; details?: string } } };
+      const d = err?.response?.data;
+      const line = [d?.error, d?.details].filter(Boolean).join(" — ");
+      setMessage(line || "Falha ao criar conta.");
     }
   }
 

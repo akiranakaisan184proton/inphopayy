@@ -134,6 +134,17 @@ app.post("/auth/register", async (req, res) => {
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Dados invalidos." });
 
+  if (
+    process.env.AWS_LAMBDA_FUNCTION_NAME &&
+    (!String(process.env.SUPABASE_URL || "").trim() || !String(process.env.SUPABASE_SERVICE_KEY || "").trim())
+  ) {
+    return res.status(503).json({
+      error: "Banco de dados nao configurado no servidor.",
+      details:
+        "Na Netlify defina SUPABASE_URL (ex.: https://xxx.supabase.co, sem /rest/v1/) e SUPABASE_SERVICE_KEY com escopo Functions + Production.",
+    });
+  }
+
   const { username, name, password } = parsed.data;
   try {
     const existing = await repo.findUserByUsername(username);
@@ -158,7 +169,17 @@ app.post("/auth/register", async (req, res) => {
     if (String(error.message || "").toLowerCase().includes("unique")) {
       return res.status(409).json({ error: "Usuario ja cadastrado." });
     }
-    return res.status(500).json({ error: "Falha ao criar usuario.", details: String(error.message) });
+    const msg = String(error.message || error);
+    let hint = "";
+    if (/does not exist|relation.*users/i.test(msg)) {
+      hint =
+        " Tabelas ausentes no Supabase: rode o SQL em supabase/schema.sql (e migration_*.sql se precisar) no SQL Editor do projeto.";
+    } else if (/row-level security|violates row-level security/i.test(msg)) {
+      hint = " RLS bloqueou o insert: use a service_role key e/ou desative RLS nas tabelas internas (veja schema.sql).";
+    } else if (/invalid api key|jwt|fetch failed|ENOTFOUND/i.test(msg)) {
+      hint = " Confira SUPABASE_URL (sem /rest/v1/) e SUPABASE_SERVICE_KEY no Netlify (Functions + Production).";
+    }
+    return res.status(500).json({ error: "Falha ao criar usuario.", details: msg + hint });
   }
 });
 
