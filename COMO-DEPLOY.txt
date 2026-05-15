@@ -12,7 +12,7 @@ INPHOPAY — COMO PUBLICAR NA NETLIFY (E FAZER O DISCORD FUNCIONAR)
       > Link repository > escolha o repo > branch main ou master.
    c) Build settings (ja batem com netlify.toml na raiz):
         Base directory: (vazio)
-        Build command:   npm install && npm run build:frontend
+        Build command:   npm install && npm --prefix backend install && npm run build:frontend
         Publish directory: frontend/dist
    d) No GitHub do repo: Settings > Secrets and variables > Actions > New repository secret
         NETLIFY_SITE_ID  = 29d40e90-566c-4fcc-b824-fda7a562ab54

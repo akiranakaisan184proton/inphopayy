@@ -1,6 +1,7 @@
 [build]
   base = "."
-  command = "npm install && npm run build:frontend"
+  # backend/ tem better-sqlite3; o bundler das Functions resolve a partir de backend/node_modules.
+  command = "npm install && npm --prefix backend install && npm run build:frontend"
   publish = "frontend/dist"
   functions = "netlify/functions"
 
