@@ -8,14 +8,22 @@
  * Opcional: DISCORD_GUILD_ID — se definido, registra so nesse servidor.
  */
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
+const backendEnv = path.join(__dirname, "..", ".env");
+const rootEnv = path.join(__dirname, "..", "..", ".env");
+require("dotenv").config({ path: backendEnv });
+require("dotenv").config({ path: rootEnv });
 
-const token = process.env.DISCORD_BOT_TOKEN;
-const appId = process.env.DISCORD_APPLICATION_ID;
+const token = String(process.env.DISCORD_BOT_TOKEN || "").trim();
+const appId = String(process.env.DISCORD_APPLICATION_ID || "").trim();
 const guildId = String(process.env.DISCORD_GUILD_ID || "").trim();
 
-if (!token || !appId) {
-  console.error("Defina DISCORD_BOT_TOKEN e DISCORD_APPLICATION_ID no backend/.env");
+const missing = [];
+if (!token) missing.push("DISCORD_BOT_TOKEN");
+if (!appId) missing.push("DISCORD_APPLICATION_ID");
+if (missing.length) {
+  console.error("Faltam variaveis (vazias ou ausentes):", missing.join(", "));
+  console.error("Coloque em backend/.env (ou na raiz do projeto em .env) os mesmos valores da Netlify, depois:");
+  console.error("  cd backend && npm run register-discord");
   process.exit(1);
 }
 
