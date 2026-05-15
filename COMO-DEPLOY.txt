@@ -47,6 +47,14 @@ INPHOPAY — COMO PUBLICAR NA NETLIFY (E FAZER O DISCORD FUNCIONAR)
 
    Substitua SEU-SITE pelo hostname real (ex.: inphopay). Salve no Discord.
 
+5b) DISCORD — COMANDOS SLASH (/conta_aprovar, /saque_concluir, etc.)
+   - Bot precisa do escopo "applications.commands" no convite do servidor.
+   - No PC (pasta backend, com backend/.env com DISCORD_BOT_TOKEN e DISCORD_APPLICATION_ID):
+        npm run register-discord
+   - Se DISCORD_GUILD_ID estiver preenchido, os comandos aparecem na hora nesse servidor.
+   - Se DISCORD_GUILD_ID estiver vazio, o script registra comandos GLOBAIS (podem demorar ate ~1h).
+   - Quem pode usar os comandos: administrador do servidor (permissao Admin) OU ids em DISCORD_ADMIN_IDS.
+
 6) AJUSTES JA FEITOS NO PROJETO NETLIFY (SITE inphopay)
    - quick_setup_in_progress foi desativado (bloqueava fluxo).
    - cdp_enabled_contexts inclui "production" alem de deploy-preview.

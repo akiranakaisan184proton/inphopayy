@@ -1,8 +1,20 @@
 const { createClient } = require("@supabase/supabase-js");
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY, {
-  auth: { persistSession: false },
-});
+/** Evita URL colada do painel com /rest/v1/ no final, que quebra o cliente. */
+function normalizeSupabaseUrl(raw) {
+  if (raw == null || typeof raw !== "string") return raw;
+  let u = raw.trim().replace(/\/+$/, "");
+  if (u.endsWith("/rest/v1")) u = u.slice(0, -"/rest/v1".length);
+  return u.replace(/\/+$/, "");
+}
+
+const supabase = createClient(
+  normalizeSupabaseUrl(process.env.SUPABASE_URL),
+  String(process.env.SUPABASE_SERVICE_KEY || "").trim(),
+  {
+    auth: { persistSession: false },
+  },
+);
 
 function unwrap({ data, error }) {
   if (error) throw error;

@@ -16,7 +16,7 @@ function jsonResponse(res, body, status = 200) {
 }
 
 function isDiscordAdmin(interaction) {
-  const uid = interaction.member?.user?.id;
+  const uid = interaction.member?.user?.id || interaction.user?.id;
   if (!uid) return false;
   const allowList = (process.env.DISCORD_ADMIN_IDS || "")
     .split(",")
@@ -114,9 +114,8 @@ async function handleCommand(interaction) {
 async function discordInteractionHandler(req, res) {
   const signature = req.get("X-Signature-Ed25519");
   const timestamp = req.get("X-Signature-Timestamp");
-  const publicKey = process.env.DISCORD_PUBLIC_KEY;
 
-  if (!publicKey) {
+  if (!process.env.DISCORD_PUBLIC_KEY) {
     return res.status(503).send("DISCORD_PUBLIC_KEY nao configurado.");
   }
   if (!signature || !timestamp) {
@@ -125,7 +124,15 @@ async function discordInteractionHandler(req, res) {
 
   const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(String(req.body || ""), "utf8");
 
-  const ok = verifyKey(rawBody, signature, timestamp, publicKey);
+  const publicKey = String(process.env.DISCORD_PUBLIC_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
+  let ok = false;
+  try {
+    ok = await verifyKey(rawBody, signature, timestamp, publicKey);
+  } catch {
+    ok = false;
+  }
   if (!ok) {
     return res.status(401).send("Invalid signature");
   }

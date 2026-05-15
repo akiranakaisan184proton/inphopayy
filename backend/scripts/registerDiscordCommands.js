@@ -1,19 +1,21 @@
 /**
- * Registra comandos slash de guild (aparecem rapido no servidor).
+ * Registra comandos slash no Discord (guild = rapido; global = sem DISCORD_GUILD_ID, pode demorar ~1h).
  *
- * Uso (na pasta backend, com .env carregado):
+ * Uso (na pasta backend, com .env):
  *   node scripts/registerDiscordCommands.js
  *
- * Env: DISCORD_BOT_TOKEN, DISCORD_APPLICATION_ID, DISCORD_GUILD_ID
+ * Env: DISCORD_BOT_TOKEN, DISCORD_APPLICATION_ID
+ * Opcional: DISCORD_GUILD_ID — se definido, registra so nesse servidor.
  */
-require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
 const token = process.env.DISCORD_BOT_TOKEN;
 const appId = process.env.DISCORD_APPLICATION_ID;
-const guildId = process.env.DISCORD_GUILD_ID;
+const guildId = String(process.env.DISCORD_GUILD_ID || "").trim();
 
-if (!token || !appId || !guildId) {
-  console.error("Defina DISCORD_BOT_TOKEN, DISCORD_APPLICATION_ID e DISCORD_GUILD_ID no backend/.env");
+if (!token || !appId) {
+  console.error("Defina DISCORD_BOT_TOKEN e DISCORD_APPLICATION_ID no backend/.env");
   process.exit(1);
 }
 
@@ -81,7 +83,16 @@ const commands = [
 ];
 
 async function main() {
-  const url = `https://discord.com/api/v10/applications/${appId}/guilds/${guildId}/commands`;
+  const url = guildId
+    ? `https://discord.com/api/v10/applications/${appId}/guilds/${guildId}/commands`
+    : `https://discord.com/api/v10/applications/${appId}/commands`;
+
+  if (!guildId) {
+    console.warn(
+      "DISCORD_GUILD_ID vazio: registrando comandos GLOBAIS (podem demorar ate ~1h para aparecer em todos os servidores).",
+    );
+  }
+
   const res = await fetch(url, {
     method: "PUT",
     headers: {
