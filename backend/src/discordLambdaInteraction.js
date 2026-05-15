@@ -2,7 +2,10 @@
  * Tratamento de POST /discord/interactions na Netlify/AWS sem passar pelo serverless-http,
  * para preservar o corpo bruto exigido pela verificação Ed25519 do Discord.
  */
-require("dotenv").config();
+// Na Netlify/AWS as vars vêm do painel; dotenv só em dev (evita log "injected env (0)" nas Functions).
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  require("dotenv").config();
+}
 const { verifyKey } = require("discord-interactions");
 
 const InteractionType = { PING: 1, APPLICATION_COMMAND: 2 };

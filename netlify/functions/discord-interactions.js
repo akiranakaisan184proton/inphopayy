@@ -2,7 +2,6 @@
  * Function dedicada ao Discord: nao carrega Express/serverless-http.
  * Corpo bruto do evento fica intacto para verificacao Ed25519 (PING e comandos).
  */
-require("dotenv").config();
 const { handleDiscordLambdaEvent } = require("../../backend/src/discordLambdaInteraction");
 
 module.exports.handler = async (event) => {
